@@ -88,6 +88,8 @@ public class Scanner {
                 if (match('/')) {
                     // A comment goes until the end of the line
                     while (peek() != '\n' && !isAtEnd()) advance();
+                } else if (match('*')){
+                    parseMultiLineComments();
                 } else {
                     addToken(SLASH);
                 }
@@ -111,6 +113,25 @@ public class Scanner {
                     Benzene.error(line, "Unexpected character.");
                 }
         }
+    }
+
+    private void parseMultiLineComments(){
+        while (!isAtEnd()){
+            if (peek() == '*'){
+                advance();
+                if (peek() == '/') {
+                    advance();
+                    return;
+                }
+                continue;
+            }
+
+            if (peek() == '\n') line += 1;
+
+            advance();
+        }
+
+        Benzene.error(line, "Did not encounter end of line while parsing multi-line comment.");
     }
 
     private void identifier(){
