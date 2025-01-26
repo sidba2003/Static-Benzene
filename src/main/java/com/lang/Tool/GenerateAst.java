@@ -30,7 +30,7 @@ public class GenerateAst {
         writer.println("import java.util.List;");
         writer.println("import src.main.java.com.lang.benzene.Tokens.Token;");
         writer.println();
-        writer.println("abstract class " + baseName + " {");
+        writer.println("public abstract class " + baseName + " {");
 
         writer.println();
         writer.println("    abstract <R> R accept(Visitor<R> visitor);");
@@ -61,10 +61,10 @@ public class GenerateAst {
     }
 
     private static void defineType(PrintWriter writer, String baseName, String className, String fieldList){
-        writer.println("    static class " + className + " extends " + baseName + " {");
+        writer.println("    public static class " + className + " extends " + baseName + " {");
 
         // Constructor.
-        writer.println("        " + className + "(" + fieldList + ") {");
+        writer.println("        public " + className + "(" + fieldList + ") {");
 
         // Store parameters in fields.
         String[] fields = fieldList.split(", ");
@@ -77,7 +77,7 @@ public class GenerateAst {
 
         writer.println();
         writer.println("        @Override");
-        writer.println("        <R> R accept(Visitor<R> visitor) {");
+        writer.println("        public <R> R accept(Visitor<R> visitor) {");
         writer.println("            return visitor.visit" + className + baseName + "(this);");
         writer.println("        }");
 
