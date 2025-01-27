@@ -16,7 +16,7 @@ public class GenerateAst {
         defineAst(outputDir, "Expr", Arrays.asList(
             "Binary : Expr left, Token operator, Expr right",
             "Grouping : Expr expression",
-            "Literal : Object value",
+            "Literal : Token literalToken",
             "Unary : Token operator, Expr right"
         ));
     }
@@ -29,6 +29,7 @@ public class GenerateAst {
         writer.println();
         writer.println("import java.util.List;");
         writer.println("import src.main.java.com.lang.benzene.Tokens.Token;");
+        writer.println("import src.main.java.com.lang.benzene.Tokens.TokenType;");
         writer.println();
         writer.println("public abstract class " + baseName + " {");
 
@@ -51,7 +52,7 @@ public class GenerateAst {
     }
 
     private static void defineVisitor(PrintWriter writer, String baseName, List<String> types){
-        writer.println("    interface Visitor<R>{");
+        writer.println("    public interface Visitor<R>{");
         for (String type : types) {
             String typeName = type.split(":")[0].trim();
             writer.println("        R visit" + typeName + baseName + "(" + typeName + " " + baseName.toLowerCase() + ");");
@@ -85,7 +86,7 @@ public class GenerateAst {
         // Fields.  
         writer.println();
         for (String field : fields) {
-        writer.println("        final " + field + ";");
+        writer.println("        public final " + field + ";");
         }
 
         writer.println("    }");

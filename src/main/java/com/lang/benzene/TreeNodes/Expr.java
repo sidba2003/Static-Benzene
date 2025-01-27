@@ -2,12 +2,13 @@ package src.main.java.com.lang.benzene.TreeNodes;
 
 import java.util.List;
 import src.main.java.com.lang.benzene.Tokens.Token;
+import src.main.java.com.lang.benzene.Tokens.TokenType;
 
 public abstract class Expr {
 
     abstract <R> R accept(Visitor<R> visitor);
 
-    interface Visitor<R>{
+    public interface Visitor<R>{
         R visitBinaryExpr(Binary expr);
         R visitGroupingExpr(Grouping expr);
         R visitLiteralExpr(Literal expr);
@@ -26,9 +27,9 @@ public abstract class Expr {
             return visitor.visitBinaryExpr(this);
         }
 
-        final Expr left;
-        final Token operator;
-        final Expr right;
+        public final Expr left;
+        public final Token operator;
+        public final Expr right;
     }
 
     public static class Grouping extends Expr {
@@ -41,12 +42,12 @@ public abstract class Expr {
             return visitor.visitGroupingExpr(this);
         }
 
-        final Expr expression;
+        public final Expr expression;
     }
 
     public static class Literal extends Expr {
-        public Literal(Object value) {
-            this.value = value;
+        public Literal(Token literalToken) {
+            this.literalToken = literalToken;
         }
 
         @Override
@@ -54,7 +55,7 @@ public abstract class Expr {
             return visitor.visitLiteralExpr(this);
         }
 
-        final Object value;
+        public final Token literalToken;
     }
 
     public static class Unary extends Expr {
@@ -68,8 +69,8 @@ public abstract class Expr {
             return visitor.visitUnaryExpr(this);
         }
 
-        final Token operator;
-        final Expr right;
+        public final Token operator;
+        public final Expr right;
     }
 
 }
