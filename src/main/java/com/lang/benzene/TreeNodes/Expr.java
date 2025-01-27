@@ -6,7 +6,7 @@ import src.main.java.com.lang.benzene.Tokens.TokenType;
 
 public abstract class Expr {
 
-    abstract <R> R accept(Visitor<R> visitor);
+    public abstract <R> R accept(Visitor<R> visitor);
 
     public interface Visitor<R>{
         R visitBinaryExpr(Binary expr);

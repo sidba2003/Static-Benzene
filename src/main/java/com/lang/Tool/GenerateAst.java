@@ -34,7 +34,7 @@ public class GenerateAst {
         writer.println("public abstract class " + baseName + " {");
 
         writer.println();
-        writer.println("    abstract <R> R accept(Visitor<R> visitor);");
+        writer.println("    public abstract <R> R accept(Visitor<R> visitor);");
         writer.println();
 
         defineVisitor(writer, baseName, types);
