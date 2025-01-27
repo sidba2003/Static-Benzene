@@ -10,12 +10,19 @@ import java.util.List;
 
 import src.main.java.com.lang.benzene.Tokens.Token;
 import src.main.java.com.lang.benzene.Tokens.TokenType;
+import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
 import src.main.java.com.lang.benzene.Parser.Parser;
 import src.main.java.com.lang.benzene.TreeNodes.Expr;
+import src.main.java.com.lang.benzene.Typechecker.Typechecker;
+import src.main.java.com.lang.benzene.Interpreter.Interpreter;
 
 
 public class Benzene {
     static boolean hadError = false;
+    static boolean hadTypecheckError = false;
+
+    private static final Typechecker typeChecker = new Typechecker();
+    private static final Interpreter interpreter = new Interpreter();
 
     public static void main(String[] args) throws IOException{
         if (args.length > 1){
@@ -32,6 +39,7 @@ public class Benzene {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
         if (hadError) System.exit(65);
+        if (hadTypecheckError) System.exit(75);
     }
 
     private static void runPrompt() throws IOException{
@@ -54,6 +62,10 @@ public class Benzene {
         Parser parser = new Parser(tokens);
         Expr expression = parser.parse();
 
+        typeChecker.typecheck(expression);
+        
+        if (!hadTypecheckError) interpreter.interpret(expression);
+        hadTypecheckError = false;
     }
 
     static void error(int line, String message){
@@ -71,5 +83,10 @@ public class Benzene {
         } else {
             report(token.line, "at " + token.lexeme + "", message);
         }
+    }
+
+    public static void typecheckError(TypeMismatchError error){
+        System.err.println(error.getMessage() + "\n[Line " + error.token.line + "]");
+        hadTypecheckError = true;
     }
 }

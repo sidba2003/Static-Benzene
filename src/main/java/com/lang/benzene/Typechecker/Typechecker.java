@@ -1,12 +1,20 @@
 package src.main.java.com.lang.benzene.Typechecker;
 
 import src.main.java.com.lang.benzene.TreeNodes.Expr;
-
 import static src.main.java.com.lang.benzene.Tokens.TokenType.*;
-
 import src.main.java.com.lang.benzene.Typechecker.Types.Type;
+import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
+import src.main.java.com.lang.benzene.Benzene;
 
 public class Typechecker implements Expr.Visitor<Object> {
+    public void typecheck(Expr expression){
+        try {
+            evaluate(expression);
+        } catch (TypeMismatchError error){
+            Benzene.typecheckError(error);
+        }
+    }
+
     @Override
     public Object visitLiteralExpr(Expr.Literal expr){
         switch (expr.literalToken.type) {
@@ -38,7 +46,7 @@ public class Typechecker implements Expr.Visitor<Object> {
                 if (expressionType.equals(Type.number)){
                     return Type.number;
                 }
-                return Type.number;// need to throw an error if negation is applied to something not a number!! Currently a placeholder value
+                throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck unary expression");
             case BANG:
                 // we simply return bool type in case of a '!', as every expression in Benzen evaluates to true or false
                 return Type.bool;
@@ -65,6 +73,8 @@ public class Typechecker implements Expr.Visitor<Object> {
                 if (left.equals(Type.number) && (right.equals(Type.number))){
                     return Type.number;
                 }
+                // this line will execute in case for all of MINUS, SLASH AND STAR
+                throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck binary expressions");
             case PLUS:
                 if (left.equals(Type.number) && right.equals(Type.number)){
                     return Type.number;
@@ -78,6 +88,7 @@ public class Typechecker implements Expr.Visitor<Object> {
                 if (left.equals(Type.number) && right.equals(Type.string)){
                     return Type.string;
                 }
+                throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck binary expressions");
             case GREATER:
                 if (left.equals(Type.number) && right.equals(Type.number)){
                     return Type.number;
@@ -94,6 +105,8 @@ public class Typechecker implements Expr.Visitor<Object> {
                 if (left.equals(Type.number) && right.equals(Type.number)){
                     return Type.number;
                 }
+                // this line will execute in case for all of, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL
+                throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck binary expressions");
             case BANG_EQUAL:
             case EQUAL_EQUAL:
                 return Type.bool;
