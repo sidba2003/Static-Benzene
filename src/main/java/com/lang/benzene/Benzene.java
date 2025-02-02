@@ -13,6 +13,7 @@ import src.main.java.com.lang.benzene.Tokens.TokenType;
 import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
 import src.main.java.com.lang.benzene.Parser.Parser;
 import src.main.java.com.lang.benzene.TreeNodes.Expr;
+import src.main.java.com.lang.benzene.TreeNodes.Stmt;
 import src.main.java.com.lang.benzene.Typechecker.Typechecker;
 import src.main.java.com.lang.benzene.Interpreter.Interpreter;
 
@@ -60,11 +61,12 @@ public class Benzene {
         List<Token> tokens = scanner.scanTokens();
 
         Parser parser = new Parser(tokens);
-        Expr expression = parser.parse();
+        List<Stmt> statements = parser.parse();
 
-        typeChecker.typecheck(expression);
-        
-        if (!hadTypecheckError) interpreter.interpret(expression);
+        typeChecker.typecheck(statements);
+
+        // we dont interpret input if a typechecking error has been found
+        if (!hadTypecheckError) interpreter.interpret(statements);
         hadTypecheckError = false;
     }
 

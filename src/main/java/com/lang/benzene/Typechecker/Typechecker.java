@@ -1,18 +1,37 @@
 package src.main.java.com.lang.benzene.Typechecker;
 
 import src.main.java.com.lang.benzene.TreeNodes.Expr;
+import src.main.java.com.lang.benzene.TreeNodes.Stmt;
+
 import static src.main.java.com.lang.benzene.Tokens.TokenType.*;
+
+import java.util.List;
+
 import src.main.java.com.lang.benzene.Typechecker.Types.Type;
 import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
 import src.main.java.com.lang.benzene.Benzene;
 
-public class Typechecker implements Expr.Visitor<Object> {
-    public void typecheck(Expr expression){
+public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    public void typecheck(List<Stmt> statements){
         try {
-            evaluate(expression);
+            for (Stmt stmt : statements){
+                execute(stmt);
+            }
         } catch (TypeMismatchError error){
             Benzene.typecheckError(error);
         }
+    }
+
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt){
+        evaluate(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt){
+        evaluate(stmt.expression);
+        return null;
     }
 
     @Override
@@ -74,7 +93,7 @@ public class Typechecker implements Expr.Visitor<Object> {
                     return Type.number;
                 }
                 // this line will execute in case for all of MINUS, SLASH AND STAR
-                throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck binary expressions");
+                throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck binary expression");
             case PLUS:
                 if (left.equals(Type.number) && right.equals(Type.number)){
                     return Type.number;
@@ -106,10 +125,14 @@ public class Typechecker implements Expr.Visitor<Object> {
                     return Type.number;
                 }
                 // this line will execute in case for all of, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL
-                throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck binary expressions");
+                throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck binary expression");
             case BANG_EQUAL:
             case EQUAL_EQUAL:
-                return Type.bool;
+                if (left.equals(Type.bool) && right.equals(Type.bool)){
+                    return Type.bool;
+                }
+                // this line will execute for both of BANG_EQUAL AND EQUAL_EQUAL swicth statements
+                throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck '==' or '!=' expression");
             default:
                 return null;    // unreachable
         }
@@ -117,5 +140,9 @@ public class Typechecker implements Expr.Visitor<Object> {
 
     private Object evaluate(Expr expr){
         return expr.accept(this);
+    }
+
+    private void execute(Stmt stmt){
+        stmt.accept(this);
     }
 }

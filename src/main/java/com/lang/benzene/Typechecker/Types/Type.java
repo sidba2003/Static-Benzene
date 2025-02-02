@@ -18,7 +18,7 @@ public class Type {
     public Type getTypeFromString(String name){
         /**
          * This function needs to be implemented
-         * Will need to implement a map for this to map each string to its correct type
+         * Will need to implement a map for this to map each type to its correct type representation
          */
 
         return this; // placeholder return value

@@ -1,11 +1,28 @@
 package src.main.java.com.lang.benzene.Interpreter;
 
-import src.main.java.com.lang.benzene.TreeNodes.Expr;
+import java.util.List;
 
-public class Interpreter implements  Expr.Visitor<Object> {
-    public void interpret(Expr expression){
-        Object value = evaluate(expression);
+import src.main.java.com.lang.benzene.TreeNodes.Expr;
+import src.main.java.com.lang.benzene.TreeNodes.Stmt;
+
+public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    public void interpret(List<Stmt> statements){
+        for (Stmt stmt : statements){
+            execute(stmt);
+        }
+    }
+
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt){
+        evaluate(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt){
+        Object value = evaluate(stmt.expression);
         System.out.println(stringify(value));
+        return null;
     }
 
     @Override
@@ -88,6 +105,10 @@ public class Interpreter implements  Expr.Visitor<Object> {
 
     private Object evaluate(Expr expr){
         return expr.accept(this);
+    }
+
+    private void execute(Stmt stmt){
+        stmt.accept(this);
     }
 
     private boolean isTruthy(Object object){
