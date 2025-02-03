@@ -27,14 +27,15 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Void visitExpressionStmt(Stmt.Expression stmt){
-        evaluate(stmt.expression);
+    public Void visitBlockStmt(Stmt.Block stmt){
+        executeBlock(stmt.statements, new Environment(environment));
         return null;
     }
 
     @Override
-    public Object visitVariableExpr(Expr.Variable expr){
-        return environment.get(expr.name);
+    public Void visitExpressionStmt(Stmt.Expression stmt){
+        evaluate(stmt.expression);
+        return null;
     }
 
     @Override
@@ -42,6 +43,18 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Object value = evaluate(stmt.expression);
         System.out.println(stringify(value));
         return null;
+    }
+
+    @Override
+    public Object visitAssignExpr(Expr.Assign expr){
+        Object value = evaluate(expr.value);
+        environment.assign(expr.name, value);
+        return value;
+    }
+
+    @Override
+    public Object visitVariableExpr(Expr.Variable expr){
+        return environment.get(expr.name);
     }
 
     @Override
@@ -128,6 +141,19 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private void execute(Stmt stmt){
         stmt.accept(this);
+    }
+
+    private void executeBlock(List<Stmt> statements, Environment environment){
+        Environment previous = this.environment;
+        try {
+            this.environment = environment;
+
+            for (Stmt statement : statements){
+                execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
     }
 
     private boolean isTruthy(Object object){

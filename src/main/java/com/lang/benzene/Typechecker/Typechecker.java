@@ -55,9 +55,27 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitBlockStmt(Stmt.Block stmt){
+        executeBlock(stmt.statements, new Environment(environment));
+        return null;
+    }
+
+    @Override
     public Void visitPrintStmt(Stmt.Print stmt){
         evaluate(stmt.expression);
         return null;
+    }
+
+    @Override
+    public Object visitAssignExpr(Expr.Assign expr){
+        Object assignValueType = evaluate(expr.value);
+        Object variableType = environment.get(expr.name);
+
+        if (!assignValueType.equals(variableType)){
+            throw new TypeMismatchError(expr.name, "Type mismatch encountered during variable assignment.");
+        }
+
+        return assignValueType;
     }
 
     @Override
@@ -161,6 +179,19 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck '==' or '!=' expression");
             default:
                 return null;    // unreachable
+        }
+    }
+
+    private void executeBlock(List<Stmt> statements, Environment environment){
+        Environment previous = this.environment;
+        try {
+            this.environment = environment;
+
+            for (Stmt statement : statements){
+                execute(statement);
+            }
+        } finally {
+            this.environment = previous;
         }
     }
 

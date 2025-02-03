@@ -15,6 +15,10 @@ public class Type {
         return this.getName().equals(otherType.substring(2, otherType.length() - 2));
     }
 
+    public boolean equals(Type otherType){
+        return this.getName().equals(otherType.getName());
+    }
+
     public Type getTypeFromString(String name){
         /**
          * This function needs to be implemented
