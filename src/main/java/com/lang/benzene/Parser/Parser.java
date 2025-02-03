@@ -41,7 +41,7 @@ public class Parser {
   private Stmt varDeclaration(){
     Token name = consume(IDENTIFIER, "Expect variable name.");
 
-    consume(SEMICOLON, "Expected ':' before type.");
+    consume(COLON, "Expected ':' before type.");
 
     Token type = consume(TYPE, "Expected type after colon.");
     String variableType = type.lexeme;

@@ -9,23 +9,49 @@ import java.util.List;
 
 import src.main.java.com.lang.benzene.Typechecker.Types.Type;
 import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
+import src.main.java.com.lang.benzene.Errors.ValueNotFoundError;
 import src.main.java.com.lang.benzene.Benzene;
+import src.main.java.com.lang.benzene.Environment.Environment;
 
 public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    private Environment environment = new Environment();
+
     public void typecheck(List<Stmt> statements){
         try {
             for (Stmt stmt : statements){
                 execute(stmt);
             }
-        } catch (TypeMismatchError error){
-            Benzene.typecheckError(error);
+        } catch (TypeMismatchError | ValueNotFoundError error){
+            if (error instanceof TypeMismatchError) Benzene.typecheckError((TypeMismatchError) error);
+            if (error instanceof ValueNotFoundError) Benzene.typecheckError((ValueNotFoundError) error);
         }
+    }
+
+    @Override
+    public Void visitVarStmt(Stmt.Var stmt){
+        Object value = Type.nil;
+        if (stmt.initializer != null){
+            value = evaluate(stmt.initializer);
+        }
+
+        Type actualValue = (Type) value;
+        if (!actualValue.equals(stmt.type)){
+            throw new TypeMismatchError(stmt.name, "Type mismatch encountered during variable declaration.");
+        }
+
+        environment.define(stmt.name.lexeme, actualValue);
+        return null;
     }
 
     @Override
     public Void visitExpressionStmt(Stmt.Expression stmt){
         evaluate(stmt.expression);
         return null;
+    }
+
+    @Override
+    public Object visitVariableExpr(Expr.Variable expr){
+        return environment.get(expr.name);
     }
 
     @Override

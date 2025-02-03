@@ -11,6 +11,7 @@ import java.util.List;
 import src.main.java.com.lang.benzene.Tokens.Token;
 import src.main.java.com.lang.benzene.Tokens.TokenType;
 import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
+import src.main.java.com.lang.benzene.Errors.ValueNotFoundError;
 import src.main.java.com.lang.benzene.Parser.Parser;
 import src.main.java.com.lang.benzene.TreeNodes.Expr;
 import src.main.java.com.lang.benzene.TreeNodes.Stmt;
@@ -88,6 +89,11 @@ public class Benzene {
     }
 
     public static void typecheckError(TypeMismatchError error){
+        System.err.println(error.getMessage() + "\n[Line " + error.token.line + "]");
+        hadTypecheckError = true;
+    }
+
+    public static void typecheckError(ValueNotFoundError error){
         System.err.println(error.getMessage() + "\n[Line " + error.token.line + "]");
         hadTypecheckError = true;
     }
