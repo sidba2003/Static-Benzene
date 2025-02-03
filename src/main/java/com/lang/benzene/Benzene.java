@@ -13,7 +13,6 @@ import src.main.java.com.lang.benzene.Tokens.TokenType;
 import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
 import src.main.java.com.lang.benzene.Errors.ValueNotFoundError;
 import src.main.java.com.lang.benzene.Parser.Parser;
-import src.main.java.com.lang.benzene.TreeNodes.Expr;
 import src.main.java.com.lang.benzene.TreeNodes.Stmt;
 import src.main.java.com.lang.benzene.Typechecker.Typechecker;
 import src.main.java.com.lang.benzene.Interpreter.Interpreter;
