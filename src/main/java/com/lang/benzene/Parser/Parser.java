@@ -43,7 +43,7 @@ public class Parser {
 
     consume(SEMICOLON, "Expected ':' before type.");
 
-    Token type = consume(TYPE, "Expected type after semi-colon.");
+    Token type = consume(TYPE, "Expected type after colon.");
     String variableType = type.lexeme;
 
     Expr initializer = null;

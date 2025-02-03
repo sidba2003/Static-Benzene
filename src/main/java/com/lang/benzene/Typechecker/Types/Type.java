@@ -12,7 +12,7 @@ public class Type {
     }
 
     public boolean equals(String otherType){
-        return this.name.equals(otherType);
+        return this.getName().equals(otherType);
     }
 
     public Type getTypeFromString(String name){
