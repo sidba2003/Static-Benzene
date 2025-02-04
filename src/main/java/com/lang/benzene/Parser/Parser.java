@@ -59,7 +59,30 @@ public class Parser {
     if (match(PRINT)) return printStatement();
     if (match(LEFT_BRACE)) return new Stmt.Block(block());
     if (match(IF)) return ifStatement();
+    if (match(WHILE)) return whileStatement();
+    if (match(CONTINUE)) return continueStmt();
+    if (match(BREAK)) return breakStmt();
+
     return expressionStatement();
+  }
+
+  private Stmt continueStmt(){
+    consume(SEMICOLON, "Expect ';' after continue statement.");
+    return new Stmt.Continue(previous());
+  }
+
+  private Stmt breakStmt(){
+    consume(SEMICOLON, "Expect ';' after break statement.");
+    return new Stmt.Break(previous());
+  }
+
+  private Stmt whileStatement(){
+    consume(LEFT_PAREN, "Expect '(' after 'while'.");
+    Expr condition = expression();
+    consume(RIGHT_PAREN, "Expect ')' after while condition.");
+    Stmt body = statement();
+
+    return new Stmt.While(condition, body);
   }
 
   private Stmt ifStatement(){
@@ -104,7 +127,7 @@ public class Parser {
   }
 
   private Expr assignment(){
-    Expr expr = equality();
+    Expr expr = or();
 
     if (match(EQUAL)){
       Token equals = previous();
@@ -116,6 +139,30 @@ public class Parser {
       }
 
       error(equals, "Invalid assignment target.");
+    }
+
+    return expr;
+  }
+
+  private Expr or(){
+    Expr expr = and();
+
+    while (match(OR)){
+      Token operator = previous();
+      Expr right = and();
+      expr = new Expr.Binary(expr, operator, right);
+    }
+
+    return expr;
+  }
+
+  private Expr and(){
+    Expr expr = equality();
+
+    while (match(AND)){
+      Token operator = previous();
+      Expr right = equality();
+      expr = new Expr.Binary(expr, operator, right);
     }
 
     return expr;

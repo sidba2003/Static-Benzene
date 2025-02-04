@@ -10,6 +10,9 @@ public abstract class Stmt {
 
     public interface Visitor<R>{
         R visitExpressionStmt(Expression stmt);
+        R visitWhileStmt(While stmt);
+        R visitContinueStmt(Continue stmt);
+        R visitBreakStmt(Break stmt);
         R visitBlockStmt(Block stmt);
         R visitIfStmt(If stmt);
         R visitPrintStmt(Print stmt);
@@ -27,6 +30,47 @@ public abstract class Stmt {
         }
 
         public final Expr expression;
+    }
+
+    public static class While extends Stmt {
+        public While(Expr condition, Stmt body) {
+            this.condition = condition;
+            this.body = body;
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitWhileStmt(this);
+        }
+
+        public final Expr condition;
+        public final Stmt body;
+    }
+
+    public static class Continue extends Stmt {
+        public Continue(Token continueToken) {
+            this.continueToken = continueToken;
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitContinueStmt(this);
+        }
+
+        public final Token continueToken;
+    }
+
+    public static class Break extends Stmt {
+        public Break(Token breakToken) {
+            this.breakToken = breakToken;
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitBreakStmt(this);
+        }
+
+        public final Token breakToken;
     }
 
     public static class Block extends Stmt {

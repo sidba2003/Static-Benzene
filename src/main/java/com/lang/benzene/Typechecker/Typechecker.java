@@ -8,6 +8,8 @@ import static src.main.java.com.lang.benzene.Tokens.TokenType.*;
 import java.util.List;
 
 import src.main.java.com.lang.benzene.Typechecker.Types.Type;
+import src.main.java.com.lang.benzene.Errors.BreakError;
+import src.main.java.com.lang.benzene.Errors.ContinueError;
 import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
 import src.main.java.com.lang.benzene.Errors.ValueNotFoundError;
 import src.main.java.com.lang.benzene.Benzene;
@@ -15,6 +17,7 @@ import src.main.java.com.lang.benzene.Environment.Environment;
 
 public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private Environment environment = new Environment();
+    private int insideLoop = 0; // to keep track of nested loops
 
     public void typecheck(List<Stmt> statements){
         try {
@@ -40,6 +43,32 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
 
         environment.define(stmt.name.lexeme, actualValue);
+        return null;
+    }
+
+    @Override
+    public Void visitWhileStmt(Stmt.While stmt){
+        // no need to typecheck the condition, as all expressions in Benzene evaluate to true or false
+        insideLoop++;
+        execute(stmt.body);
+        insideLoop--;
+
+        return null;
+    }
+
+    @Override
+    public Void visitContinueStmt(Stmt.Continue stmt){
+        if (insideLoop == 0){
+            throw new ContinueError(stmt.continueToken, "Continue statement encountered on line " + stmt.continueToken.line + ".");
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitBreakStmt(Stmt.Break stmt){
+        if (insideLoop == 0){
+            throw new BreakError(stmt.breakToken, "Break statement encountered on line " + stmt.breakToken.line + ".");
+        }
         return null;
     }
 
@@ -136,6 +165,10 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Type right = (Type) evaluate(expr.right);
 
         switch (expr.operator.type) {
+            case OR:
+            case AND:
+                // we simply return bool type in case of a 'OR' or 'AND', as every expression in Benzen evaluates to true or false
+                return Type.bool;
             case MINUS:
                 if (left.equals(Type.number) && (right.equals(Type.number))){
                     return Type.number;
