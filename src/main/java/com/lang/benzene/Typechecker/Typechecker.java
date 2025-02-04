@@ -67,6 +67,18 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitIfStmt(Stmt.If stmt){
+        // all expressions in Benzene evaluate to true or false
+        // so we can ignore the conditional expression and only typecheck the branches
+        execute(stmt.thenBranch);
+        if (stmt.elseBranch != null){
+            execute(stmt.elseBranch);
+        }
+
+        return null;
+    }
+
+    @Override
     public Object visitAssignExpr(Expr.Assign expr){
         Object assignValueType = evaluate(expr.value);
         Object variableType = environment.get(expr.name);
