@@ -298,7 +298,6 @@ public class Parser {
         case CLASS:
         case FUN:
         case VAR:
-        case FOR:
         case IF:
         case WHILE:
         case PRINT:
