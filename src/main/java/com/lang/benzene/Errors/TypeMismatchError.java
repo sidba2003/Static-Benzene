@@ -1,5 +1,7 @@
 package src.main.java.com.lang.benzene.Errors;
 
+import java.lang.reflect.Type;
+
 import src.main.java.com.lang.benzene.Tokens.Token;
 
 public class TypeMismatchError extends RuntimeException {

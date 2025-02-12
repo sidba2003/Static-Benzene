@@ -93,8 +93,22 @@ public class Parser {
     if (match(WHILE)) return whileStatement();
     if (match(CONTINUE)) return continueStmt();
     if (match(BREAK)) return breakStmt();
+    if (match(RETURN)) return returnStatement();
 
     return expressionStatement();
+  }
+
+  private Stmt returnStatement(){
+    Token keyword = previous();
+
+    // if return statement has no value, return nil
+    Expr value = new Expr.Literal(new Token(NIL, "nil", null, keyword.line));
+    if (!check(SEMICOLON)){
+      value = expression();
+    }
+
+    consume(SEMICOLON, "Expect ';' after return value.");
+    return new Stmt.Return(keyword, value);
   }
 
   private Stmt continueStmt(){

@@ -13,8 +13,10 @@ import src.main.java.com.lang.benzene.Typechecker.Types.Type;
 import src.main.java.com.lang.benzene.Typechecker.Types.BenzeneCallable.BenzeneCallable;
 import src.main.java.com.lang.benzene.Errors.BreakError;
 import src.main.java.com.lang.benzene.Errors.ContinueError;
+import src.main.java.com.lang.benzene.Errors.ReturnError;
 import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
 import src.main.java.com.lang.benzene.Errors.ValueNotFoundError;
+import src.main.java.com.lang.benzene.Tokens.Token;
 import src.main.java.com.lang.benzene.Benzene;
 import src.main.java.com.lang.benzene.Environment.Environment;
 
@@ -53,7 +55,30 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt){
-        BenzeneFunction function = new BenzeneFunction(stmt.params, stmt.paramTypes, stmt.returnType, stmt.body);
+        // disallow nested functions
+        for (Stmt bodyStmt : stmt.body){
+            if (bodyStmt instanceof Stmt.Function){
+                Stmt.Function functionStmt = (Stmt.Function)bodyStmt;
+                throw new TypeMismatchError(functionStmt.name, "Nested functions are not allowed in Benzene.");
+            }
+        }
+        
+        // if there doesnt exist a return statement in the topmost level of the function....
+        // we add an implicit return statement at the end of the function body
+        boolean hasReturn = false;
+        for (Stmt bodyStmt : stmt.body){
+            if (bodyStmt instanceof Stmt.Return){
+                hasReturn = true;
+                break;
+            }
+        }
+        
+        // adding the implicit return statement
+        if (!hasReturn){
+            stmt.body.add(new Stmt.Return(stmt.name, new Expr.Literal(new Token(NIL, "nil", null, 0))));
+        }
+
+        BenzeneFunction function = new BenzeneFunction(stmt, stmt.params, stmt.paramTypes, stmt.returnType, stmt.body);
         environment.define(stmt.name.lexeme, function);
 
         Type.updateTypeMap(function.getName(), function);
@@ -62,6 +87,15 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         function.call(this);
 
         return null;
+    }
+
+    @Override
+    public Void visitReturnStmt(Stmt.Return stmt){
+        if (BenzeneFunction.insideFunction){
+            BenzeneFunction.returnTypes.add((Type) evaluate(stmt.value));
+            return null;
+        } 
+        throw new ReturnError(stmt.keyword);
     }
 
     @Override

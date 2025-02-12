@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import src.main.java.com.lang.benzene.Environment.Environment;
 import src.main.java.com.lang.benzene.Errors.BreakError;
 import src.main.java.com.lang.benzene.Errors.ContinueError;
+import src.main.java.com.lang.benzene.Errors.ReturnError;
 import src.main.java.com.lang.benzene.Interpreter.BenzeneCallable.BenzeneCallable;
 import src.main.java.com.lang.benzene.TreeNodes.Expr;
 import src.main.java.com.lang.benzene.TreeNodes.Stmt;
@@ -87,6 +88,11 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Object value = evaluate(stmt.expression);
         System.out.println(stringify(value));
         return null;
+    }
+
+    @Override
+    public Void visitReturnStmt(Stmt.Return stmt){
+        throw new ReturnError(evaluate(stmt.value));
     }
 
     @Override

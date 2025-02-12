@@ -3,6 +3,7 @@ package src.main.java.com.lang.benzene.Interpreter;
 import java.util.List;
 
 import src.main.java.com.lang.benzene.Environment.Environment;
+import src.main.java.com.lang.benzene.Errors.ReturnError;
 import src.main.java.com.lang.benzene.Interpreter.BenzeneCallable.BenzeneCallable;
 import src.main.java.com.lang.benzene.TreeNodes.Stmt;
 
@@ -20,7 +21,12 @@ class BenzeneFunction implements BenzeneCallable{
             environment.define(declaration.params.get(i).lexeme, arguments.get(i));
         }
 
-        interpreter.executeBlock(declaration.body, environment);
+        try {
+            interpreter.executeBlock(declaration.body, environment);
+        } catch (ReturnError returnValue){
+            return returnValue.value;
+        }
+        
         return null;
     }
 

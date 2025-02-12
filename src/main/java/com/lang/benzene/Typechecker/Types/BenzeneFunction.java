@@ -1,8 +1,13 @@
 package src.main.java.com.lang.benzene.Typechecker.Types;
 
+import static src.main.java.com.lang.benzene.Tokens.TokenType.TYPE;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 import src.main.java.com.lang.benzene.Environment.Environment;
+import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
 import src.main.java.com.lang.benzene.Tokens.Token;
 import src.main.java.com.lang.benzene.TreeNodes.Stmt;
 import src.main.java.com.lang.benzene.Typechecker.Typechecker;
@@ -14,9 +19,15 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
     public List<Token> parameters;
     public List<Stmt> body;
 
-    public BenzeneFunction(List<Token> params, List<String> paramTypes, String returnType, List<Stmt> body){
+    public static boolean insideFunction = false;
+    public static ArrayList<Type> returnTypes = new ArrayList<>();
+
+    private Stmt.Function declaration;
+
+    public BenzeneFunction(Stmt.Function declaration, List<Token> params, List<String> paramTypes, String returnType, List<Stmt> body){
         super("function");
 
+        this.declaration = declaration;
         this.parameters = params;
         this.parameterTypes = paramTypes;
         this.returnType = returnType;
@@ -51,7 +62,20 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
             environment.define(this.parameters.get(i).lexeme, Type.getTypeFromString(this.parameterTypes.get(i)));
         }
 
+        insideFunction = true;
         typechecker.executeBlock(this.body, environment);
+        insideFunction = false;
+
+        // checking the return types of all the return statements in the function is acceptable
+        for (Type returnType : returnTypes){
+            if (!returnType.equals(Type.getTypeFromString(this.returnType))){
+                throw new TypeMismatchError(this.declaration.name, "Return type of function does not match the declared return type in " + this.declaration.name.lexeme + ".");
+            } 
+        }
+
+        // removing all the encountered return types within the function
+        returnTypes.clear();
+
         return (Type) Type.getTypeFromString(this.returnType);
     }
 }
