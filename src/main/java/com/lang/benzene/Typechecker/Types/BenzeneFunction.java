@@ -24,7 +24,19 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
     }
 
     public String getName(){
-        // need to implement this
+        StringBuilder functionType = new StringBuilder();
+        functionType.append("fn<");
+        functionType.append(this.returnType.substring(2, returnType.length() - 2) + "<");
+
+        for (String paramType : this.parameterTypes){
+            functionType.append(paramType.substring(2, paramType.length() - 2) + ",");
+        }
+
+        functionType.deleteCharAt(functionType.length() - 1);
+
+        functionType.append(">>");
+
+        return functionType.toString();
     }
 
     @Override

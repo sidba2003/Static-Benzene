@@ -52,6 +52,19 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitFunctionStmt(Stmt.Function stmt){
+        BenzeneFunction function = new BenzeneFunction(stmt.params, stmt.paramTypes, stmt.returnType, stmt.body);
+        environment.define(stmt.name.lexeme, function);
+
+        Type.updateTypeMap(function.getName(), function);
+        
+        // we typecheck the function immediately after defining it
+        function.call(this);
+
+        return null;
+    }
+
+    @Override
     public Void visitWhileStmt(Stmt.While stmt){
         // no need to typecheck the condition, as all expressions in Benzene evaluate to true or false
         insideLoop++;
