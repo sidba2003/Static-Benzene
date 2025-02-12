@@ -5,9 +5,11 @@ import src.main.java.com.lang.benzene.TreeNodes.Stmt;
 
 import static src.main.java.com.lang.benzene.Tokens.TokenType.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import src.main.java.com.lang.benzene.Typechecker.Types.Type;
+import src.main.java.com.lang.benzene.Typechecker.Types.BenzeneCallable.BenzeneCallable;
 import src.main.java.com.lang.benzene.Errors.BreakError;
 import src.main.java.com.lang.benzene.Errors.ContinueError;
 import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
@@ -16,7 +18,9 @@ import src.main.java.com.lang.benzene.Benzene;
 import src.main.java.com.lang.benzene.Environment.Environment;
 
 public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
-    private Environment environment = new Environment();
+    private final Environment globals = new Environment();
+    private Environment environment = globals;
+    
     private int insideLoop = 0; // to keep track of nested loops
 
     public void typecheck(List<Stmt> statements){
@@ -157,6 +161,33 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             default:
                 return null;
         }
+    }
+
+    @Override
+    public Object visitCallExpr(Expr.Call expr){
+        Object callee = evaluate(expr.callee);
+        if (!(callee instanceof BenzeneCallable)){
+            throw new TypeMismatchError(expr.paren, "Type mismatch while trying to typecheck function call");
+        }
+
+        BenzeneFunction function = (BenzeneFunction) callee;
+
+        ArrayList<Type> argumentTypes = new ArrayList<>();
+        for (Expr argument : expr.arguments){
+            argumentTypes.add((Type) evaluate(argument));
+        }
+
+        if (argumentTypes.size() != function.arity()){
+            throw new RuntimeException("Expected " + function.arity() + " arguments but got " + argumentTypes.size() + ".");
+        }
+
+        for (int i = 0; i < argumentTypes.size(); i++){
+            if (!argumentTypes.get(i).equals(function.parameterTypes.get(i))){
+                throw new TypeMismatchError(expr.paren, "Type mismatch while trying to typecheck function call");
+            }
+        }
+
+        return Type.getTypeFromString(function.returnType);
     }
 
     @Override 

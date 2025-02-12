@@ -8,15 +8,18 @@ import static src.main.java.com.lang.benzene.Tokens.TokenType.SLASH;
 import static src.main.java.com.lang.benzene.Tokens.TokenType.STAR;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import src.main.java.com.lang.benzene.Environment.Environment;
 import src.main.java.com.lang.benzene.Errors.BreakError;
 import src.main.java.com.lang.benzene.Errors.ContinueError;
+import src.main.java.com.lang.benzene.Interpreter.BenzeneCallable.BenzeneCallable;
 import src.main.java.com.lang.benzene.TreeNodes.Expr;
 import src.main.java.com.lang.benzene.TreeNodes.Stmt;
 
 public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
-    private Environment environment = new Environment();
+    private final Environment globals = new Environment();
+    private Environment environment = globals;
 
     public void interpret(List<Stmt> statements){
         for (Stmt stmt : statements){
@@ -136,6 +139,26 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
             default:
                 return null;
         }
+    }
+
+    @Override
+    public Object visitCallExpr(Expr.Call expr){
+        Object callee = evaluate(expr.callee);
+        if (!(callee instanceof BenzeneCallable)){
+            throw new RuntimeException("Can only call functions and classes.");
+        }
+
+        List<Object> arguments = new ArrayList<>();
+        for (Expr argument : expr.arguments){
+            arguments.add(evaluate(argument));
+        }
+
+        BenzeneCallable function = (BenzeneCallable)callee;
+        if (arguments.size() != function.arity()){
+            throw new RuntimeException("Expected " + function.arity() + " arguments but got " + arguments.size() + ".");
+        }
+
+        return function.call(this, arguments);
     }
 
     @Override

@@ -19,6 +19,7 @@ public class GenerateAst {
             "Grouping : Expr expression",
             "Literal : Token literalToken",
             "Unary : Token operator, Expr right",
+            "Call : Expr callee, Token paren, List<Expr> arguments",
             "Variable : Token name"
         ));
 
