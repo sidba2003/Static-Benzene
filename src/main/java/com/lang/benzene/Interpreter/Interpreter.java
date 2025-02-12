@@ -18,7 +18,7 @@ import src.main.java.com.lang.benzene.TreeNodes.Expr;
 import src.main.java.com.lang.benzene.TreeNodes.Stmt;
 
 public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
-    private final Environment globals = new Environment();
+    public final Environment globals = new Environment();
     private Environment environment = globals;
 
     public void interpret(List<Stmt> statements){
@@ -144,9 +144,6 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitCallExpr(Expr.Call expr){
         Object callee = evaluate(expr.callee);
-        if (!(callee instanceof BenzeneCallable)){
-            throw new RuntimeException("Can only call functions and classes.");
-        }
 
         List<Object> arguments = new ArrayList<>();
         for (Expr argument : expr.arguments){
@@ -154,9 +151,6 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
 
         BenzeneCallable function = (BenzeneCallable)callee;
-        if (arguments.size() != function.arity()){
-            throw new RuntimeException("Expected " + function.arity() + " arguments but got " + arguments.size() + ".");
-        }
 
         return function.call(this, arguments);
     }
@@ -215,7 +209,7 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
         stmt.accept(this);
     }
 
-    private void executeBlock(List<Stmt> statements, Environment environment){
+    public void executeBlock(List<Stmt> statements, Environment environment){
         Environment previous = this.environment;
         try {
             this.environment = environment;

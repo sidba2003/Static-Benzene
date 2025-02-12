@@ -8,6 +8,7 @@ import static src.main.java.com.lang.benzene.Tokens.TokenType.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import src.main.java.com.lang.benzene.Typechecker.Types.BenzeneFunction;
 import src.main.java.com.lang.benzene.Typechecker.Types.Type;
 import src.main.java.com.lang.benzene.Typechecker.Types.BenzeneCallable.BenzeneCallable;
 import src.main.java.com.lang.benzene.Errors.BreakError;
@@ -18,7 +19,7 @@ import src.main.java.com.lang.benzene.Benzene;
 import src.main.java.com.lang.benzene.Environment.Environment;
 
 public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
-    private final Environment globals = new Environment();
+    public final Environment globals = new Environment();
     private Environment environment = globals;
     
     private int insideLoop = 0; // to keep track of nested loops
@@ -258,7 +259,7 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
     }
 
-    private void executeBlock(List<Stmt> statements, Environment environment){
+    public void executeBlock(List<Stmt> statements, Environment environment){
         Environment previous = this.environment;
         try {
             this.environment = environment;

@@ -1,7 +1,21 @@
 package src.main.java.com.lang.benzene.Typechecker.Types;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import src.main.java.com.lang.benzene.Errors.TypeNotFoundError;
+
 public class Type {
     String name;
+
+    private static Map<String, Object> typeMap = new HashMap<String, Object>();
+
+    static {
+        typeMap.put("<<number>>", Type.number);
+        typeMap.put("<<string>>", Type.string);
+        typeMap.put("<<nil>>", Type.nil);
+        typeMap.put("<<boolean>>", Type.bool);
+    }
 
     public Type(String name){
         this.name = name;
@@ -19,13 +33,19 @@ public class Type {
         return this.getName().equals(otherType.getName());
     }
 
-    public static Type getTypeFromString(String name){
-        /**
-         * This function needs to be implemented
-         * Will need to implement a map for this to map each type to its correct type representation
-         */
+    public void updateTypeMap(String type, Object typeValue){
+        typeMap.put(type, typeValue);
+    }
 
-        return null; // placeholder return value
+    public static Object getTypeFromString(String name){
+        if (typeMap.containsKey(name)){
+            return typeMap.get(name);
+        }
+
+        // will need implement different logic for class instance retireval
+        // for ex, if if we have class a{}...its type will be <<cls<a>>> and its instance type will be <<a>>
+
+        throw new TypeNotFoundError("Type " + name + " not found.");
     }
 
     static public Type number = new Type("number");

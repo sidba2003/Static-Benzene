@@ -31,11 +31,42 @@ public class Parser {
   private Stmt declaration(){
     try {
       if (match(VAR)) return varDeclaration();
+      if (match(FUN)) return function("function");
       return statement();
     } catch (ParseError error) {
       synchronize();
       return null;
     }
+  }
+
+  private Stmt.Function function(String kind){
+    Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
+    consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
+
+    List<Token> parameters = new ArrayList<>();
+    List<String> paramTypes = new ArrayList<>();
+
+    if (!check(RIGHT_PAREN)){
+      do {
+        if (parameters.size() >= 255){
+          error(peek(), "Cannot have more than 255 parameters.");
+        }
+
+        parameters.add(consume(IDENTIFIER, "Expect parameter name."));
+        consume(COLON, "Expect ':' before parameter type.");
+        paramTypes.add(consume(TYPE, "Expect parameter type.").lexeme);
+      } while (match(COMMA));
+    }
+
+    consume(RIGHT_PAREN, "Expect ')' after parameters.");
+
+    consume(COLON, "Expect ':' before return type.");
+    String returnType = consume(TYPE, "Expect return type.").lexeme;
+
+    consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
+    List<Stmt> body = block();
+
+    return new Stmt.Function(name, parameters, paramTypes, body, returnType);
   }
 
   private Stmt varDeclaration(){

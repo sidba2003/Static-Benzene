@@ -29,6 +29,7 @@ public class GenerateAst {
             "Continue : Token continueToken",
             "Break : Token breakToken",
             "Block : List<Stmt> statements",
+            "Function : Token name, List<Token> params, List<String> paramTypes, List<Stmt> body, String returnType",
             "If : Expr condition, Stmt thenBranch, Stmt elseBranch",
             "Print : Expr expression",
             "Var : Token name, String type, Expr initializer"
