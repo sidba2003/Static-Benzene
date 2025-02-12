@@ -40,6 +40,6 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
         }
 
         typechecker.executeBlock(this.body, environment);
-        return null;
+        return (Type) Type.getTypeFromString(this.returnType);
     }
 }

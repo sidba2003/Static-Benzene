@@ -8,7 +8,7 @@ import src.main.java.com.lang.benzene.Errors.TypeNotFoundError;
 public class Type {
     String name;
 
-    private static Map<String, Object> typeMap = new HashMap<String, Object>();
+    private static Map<String, Type> typeMap = new HashMap<String, Type>();
 
     static {
         typeMap.put("<<number>>", Type.number);
@@ -33,7 +33,7 @@ public class Type {
         return this.getName().equals(otherType.getName());
     }
 
-    public void updateTypeMap(String type, Object typeValue){
+    public void updateTypeMap(String type, Type typeValue){
         typeMap.put(type, typeValue);
     }
 
