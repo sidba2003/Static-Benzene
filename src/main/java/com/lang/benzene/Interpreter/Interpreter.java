@@ -41,7 +41,7 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt){
-        BenzeneFunction function = new BenzeneFunction(stmt);
+        BenzeneFunction function = new BenzeneFunction(stmt, environment);
         environment.define(stmt.name.lexeme, function);
         return null;
     }

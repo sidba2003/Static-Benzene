@@ -23,8 +23,9 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
     public static ArrayList<Type> returnTypes = new ArrayList<>();
 
     private Stmt.Function declaration;
+    private final Environment closure;
 
-    public BenzeneFunction(Stmt.Function declaration, List<Token> params, List<String> paramTypes, String returnType, List<Stmt> body){
+    public BenzeneFunction(Stmt.Function declaration,Environment closure, List<Token> params, List<String> paramTypes, String returnType, List<Stmt> body){
         super("function");
 
         this.declaration = declaration;
@@ -32,6 +33,7 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
         this.parameterTypes = paramTypes;
         this.returnType = returnType;
         this.body = body;
+        this.closure = closure;
     }
 
     public String getName(){
@@ -57,7 +59,7 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
 
     @Override
     public Type call(Typechecker typechecker){
-        Environment environment = new Environment(typechecker.globals);
+        Environment environment = new Environment(this.closure);
         for (int i = 0; i < this.parameters.size(); i++){
             environment.define(this.parameters.get(i).lexeme, Type.getTypeFromString(this.parameterTypes.get(i)));
         }

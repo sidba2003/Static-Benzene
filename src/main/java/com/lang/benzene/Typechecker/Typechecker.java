@@ -78,7 +78,7 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             stmt.body.add(new Stmt.Return(stmt.name, new Expr.Literal(new Token(NIL, "nil", null, 0))));
         }
 
-        BenzeneFunction function = new BenzeneFunction(stmt, stmt.params, stmt.paramTypes, stmt.returnType, stmt.body);
+        BenzeneFunction function = new BenzeneFunction(stmt, environment, stmt.params, stmt.paramTypes, stmt.returnType, stmt.body);
         environment.define(stmt.name.lexeme, function);
 
         Type.updateTypeMap(function.getName(), function);
