@@ -80,4 +80,18 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
 
         return (Type) Type.getTypeFromString(this.returnType);
     }
+
+    @Override
+    public void checkCall(ArrayList<Type> argumentTypes){
+        for (int i = 0; i < argumentTypes.size(); i++){
+            if (!argumentTypes.get(i).equals(this.parameterTypes.get(i))){
+                throw new TypeMismatchError(this.declaration.name, "Type mismatch while trying to typecheck function call");
+            }
+        }
+    }
+
+    @Override
+    public String getReturnTypeString(){
+        return this.returnType;
+    }
 }

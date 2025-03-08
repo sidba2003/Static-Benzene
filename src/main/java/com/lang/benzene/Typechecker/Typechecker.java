@@ -218,25 +218,25 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             throw new TypeMismatchError(expr.paren, "Type mismatch while trying to typecheck function call");
         }
 
-        BenzeneFunction function = (BenzeneFunction) callee;
-
         ArrayList<Type> argumentTypes = new ArrayList<>();
         for (Expr argument : expr.arguments){
             argumentTypes.add((Type) evaluate(argument));
         }
 
-        if (argumentTypes.size() != function.arity()){
-            throw new RuntimeException("Expected " + function.arity() + " arguments but got " + argumentTypes.size() + ".");
+        BenzeneCallable callable = (BenzeneCallable) callee;
+
+        if (argumentTypes.size() != callable.arity()){
+            throw new RuntimeException("Expected " + callable.arity() + " arguments but got " + argumentTypes.size() + ".");
         }
 
-        for (int i = 0; i < argumentTypes.size(); i++){
-            if (!argumentTypes.get(i).equals(function.parameterTypes.get(i))){
-                throw new TypeMismatchError(expr.paren, "Type mismatch while trying to typecheck function call");
-            }
+        try {
+            callable.checkCall(argumentTypes);
+        } catch (TypeMismatchError mismatchError){
+            throw new TypeMismatchError(expr.paren, mismatchError.getMessage());
         }
 
-        return Type.getTypeFromString(function.returnType);
-    }
+        return callable.getReturnTypeString();
+    } 
 
     @Override 
     public Object visitBinaryExpr(Expr.Binary expr){
