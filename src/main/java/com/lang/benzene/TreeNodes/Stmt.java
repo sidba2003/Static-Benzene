@@ -19,6 +19,7 @@ public abstract class Stmt {
         R visitPrintStmt(Print stmt);
         R visitReturnStmt(Return stmt);
         R visitVarStmt(Var stmt);
+        R visitClassStmt(Class stmt);
     }
 
     public static class Expression extends Stmt {
@@ -169,6 +170,23 @@ public abstract class Stmt {
         public final Token name;
         public final String type;
         public final Expr initializer;
+    }
+
+    public static class Class extends Stmt {
+        public Class(Token name, List<Stmt> methods, List<Stmt> variables) {
+            this.name = name;
+            this.methods = methods;
+            this.variables = variables;
+        }
+
+        @Override
+        public <R> R accept(Visitor<R> visitor) {
+            return visitor.visitClassStmt(this);
+        }
+
+        public final Token name;
+        public final List<Stmt> methods;
+        public final List<Stmt> variables;
     }
 
 }

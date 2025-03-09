@@ -19,6 +19,7 @@ import src.main.java.com.lang.benzene.Errors.ValueNotFoundError;
 import src.main.java.com.lang.benzene.Tokens.Token;
 import src.main.java.com.lang.benzene.Benzene;
 import src.main.java.com.lang.benzene.Environment.Environment;
+import src.main.java.com.lang.benzene.Typechecker.Types.BenzeneClass;
 
 public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     public final Environment globals = new Environment();
@@ -54,6 +55,17 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitClassStmt(Stmt.Class stmt){
+        environment.define(stmt.name.lexeme, null);
+        BenzeneClass klass = new BenzeneClass(stmt.name.lexeme);
+
+        environment.assign(stmt.name, klass);
+        Type.updateTypeMap(klass.getName(), klass);
+
+        return null;
+    }
+
+    @Override
     public Void visitFunctionStmt(Stmt.Function stmt){
         // disallow nested functions
         for (Stmt bodyStmt : stmt.body){
@@ -84,7 +96,7 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Type.updateTypeMap(function.getName(), function);
         
         // we typecheck the function immediately after defining it
-        function.call(this);
+        function.typecheck(this);
 
         return null;
     }
@@ -234,9 +246,9 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         } catch (TypeMismatchError mismatchError){
             throw new TypeMismatchError(expr.paren, mismatchError.getMessage());
         }
-
-        return callable.getReturnTypeString();
-    } 
+        
+        return callable.call(this, new ArrayList<>());
+    }
 
     @Override 
     public Object visitBinaryExpr(Expr.Binary expr){

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import src.main.java.com.lang.benzene.Errors.TypeNotFoundError;
+import src.main.java.com.lang.benzene.Typechecker.Types.BenzeneCallable.BenzeneCallable;
 
 public class Type {
     String name;
@@ -26,6 +27,11 @@ public class Type {
         return this.getName().equals(otherType.getName());
     }
 
+    @Override
+    public String toString(){
+        return this.name;
+    }
+
     public static void updateTypeMap(String type, Type typeValue){
         typeMap.put("<<" + type + ">>", typeValue);
     }
@@ -34,10 +40,16 @@ public class Type {
         if (typeMap.containsKey(name)){
             return typeMap.get(name);
         }
+        
+        // considering the case where we want a class instance
+        String className = name.substring(2, name.length() - 2);
+        String classType = "<<cls<" + className + ">>>";
 
-        // will need to implement different logic for class instance retireval
-        // for ex, if if we have class a{}...its type will be <<cls<a>>> and its instance type will be <<a>>
-
+        if (typeMap.containsKey(classType)){
+            BenzeneCallable callable = (BenzeneCallable) typeMap.get(classType);
+            return (Type) callable.call(null, null);
+        }
+        
         throw new TypeNotFoundError("Type " + name + " not found.");
     }
 

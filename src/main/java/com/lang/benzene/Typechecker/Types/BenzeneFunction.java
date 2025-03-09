@@ -57,8 +57,15 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
         return parameters.size();
     }
 
+    // only implemented the call function to incorporate java's rules
+    // made some mistakes in the initial working days on this project :(
     @Override
-    public Type call(Typechecker typechecker){
+    public Type call(Typechecker tc, List<Object> args){
+        return Type.getTypeFromString(this.returnType);
+    }
+
+    @Override
+    public Type typecheck(Typechecker typechecker){
         Environment environment = new Environment(this.closure);
         for (int i = 0; i < this.parameters.size(); i++){
             environment.define(this.parameters.get(i).lexeme, Type.getTypeFromString(this.parameterTypes.get(i)));
@@ -91,7 +98,7 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
     }
 
     @Override
-    public String getReturnTypeString(){
-        return this.returnType;
+    public Type getReturnTypeString(){
+        return null;
     }
 }

@@ -32,11 +32,31 @@ public class Parser {
     try {
       if (match(VAR)) return varDeclaration();
       if (match(FUN)) return function("function");
+      if (match(CLASS)) return classDeclaration();
       return statement();
     } catch (ParseError error) {
       synchronize();
       return null;
     }
+  }
+
+  private Stmt classDeclaration(){
+    Token name = consume(IDENTIFIER, "Expect class name.");
+    consume(LEFT_BRACE, "Expect '{' before class body.");
+
+    List<Stmt> methods = new ArrayList<>();
+    List<Stmt> variables = new ArrayList<>();
+
+    while (!check(RIGHT_BRACE) && !isAtEnd()){
+      if (match(VAR)){ 
+        variables.add(varDeclaration());
+      } else {
+        methods.add(function("method"));
+      }
+    }
+
+    consume(RIGHT_BRACE, "Expect '}' after class body.");
+    return new Stmt.Class(name, methods, variables);
   }
 
   private Stmt.Function function(String kind){

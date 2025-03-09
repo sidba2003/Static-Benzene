@@ -17,6 +17,7 @@ import src.main.java.com.lang.benzene.Errors.ReturnError;
 import src.main.java.com.lang.benzene.Interpreter.BenzeneCallable.BenzeneCallable;
 import src.main.java.com.lang.benzene.TreeNodes.Expr;
 import src.main.java.com.lang.benzene.TreeNodes.Stmt;
+import src.main.java.com.lang.benzene.Interpreter.BenzeneClass;
 
 public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
     public final Environment globals = new Environment();
@@ -36,6 +37,14 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
 
         environment.define(stmt.name.lexeme, value);
+        return null;
+    }
+
+    @Override
+    public Void visitClassStmt(Stmt.Class stmt){
+        environment.define(stmt.name.lexeme, null);
+        BenzeneClass klass = new BenzeneClass(stmt.name.lexeme);
+        environment.assign(stmt.name, klass);
         return null;
     }
 
