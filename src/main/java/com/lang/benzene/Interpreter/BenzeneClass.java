@@ -3,13 +3,16 @@ package src.main.java.com.lang.benzene.Interpreter;
 import java.util.List;
 import java.util.Map;
 
+import src.main.java.com.lang.benzene.Environment.Environment;
 import src.main.java.com.lang.benzene.Interpreter.BenzeneCallable.BenzeneCallable;
 
 public class BenzeneClass implements BenzeneCallable {
     final String name;
+    public Environment fields;
 
-    BenzeneClass(String name){
+    BenzeneClass(String name, Environment fields){
         this.name = name;
+        this.fields = fields;
     }
 
     @Override

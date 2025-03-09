@@ -14,6 +14,7 @@ import src.main.java.com.lang.benzene.Environment.Environment;
 import src.main.java.com.lang.benzene.Errors.BreakError;
 import src.main.java.com.lang.benzene.Errors.ContinueError;
 import src.main.java.com.lang.benzene.Errors.ReturnError;
+import src.main.java.com.lang.benzene.Errors.RuntimeError;
 import src.main.java.com.lang.benzene.Interpreter.BenzeneCallable.BenzeneCallable;
 import src.main.java.com.lang.benzene.TreeNodes.Expr;
 import src.main.java.com.lang.benzene.TreeNodes.Stmt;
@@ -42,8 +43,11 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitClassStmt(Stmt.Class stmt){
+        Environment fieldsEnvironment = new Environment();
+        executeBlock(stmt.variables, fieldsEnvironment);
+
         environment.define(stmt.name.lexeme, null);
-        BenzeneClass klass = new BenzeneClass(stmt.name.lexeme);
+        BenzeneClass klass = new BenzeneClass(stmt.name.lexeme, fieldsEnvironment);
         environment.assign(stmt.name, klass);
         return null;
     }
@@ -113,6 +117,16 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
 
         return null;
+    }
+
+    @Override
+    public Object visitGetExpr(Expr.Get expr){
+        Object object = evaluate(expr.object);
+        if (object instanceof BenzeneInstance){
+            return ((BenzeneInstance) object).get(expr.name);
+        }
+
+        throw new RuntimeError(expr.name, "Only instances have properties.");
     }
 
     @Override
