@@ -16,7 +16,7 @@ public enum TokenType {
 
     // Keywords
     AND, CLASS, ELSE, FALSE, FUN, IF, NIL, OR,
-    PRINT, RETURN, SUPER, THIS, TRUE, VAR, WHILE,
+    PRINT, RETURN, SUPER, TRUE, VAR, WHILE,
 
     // flow controls
     CONTINUE, BREAK,

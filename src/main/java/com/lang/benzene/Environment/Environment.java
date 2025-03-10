@@ -8,7 +8,7 @@ import src.main.java.com.lang.benzene.Tokens.Token;
 
 public class Environment {
     public final Map<String, Object> values = new HashMap<>();
-    private final Environment enclosing;
+    public final Environment enclosing;
 
     public Environment(){
         enclosing = null;

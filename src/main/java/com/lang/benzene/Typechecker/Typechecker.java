@@ -61,10 +61,16 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Environment fieldsEnvironment = new Environment();
         executeBlock(stmt.variables, fieldsEnvironment);
 
-        environment.define(stmt.name.lexeme, null);
-        BenzeneClass klass = new BenzeneClass(stmt.name.lexeme, fieldsEnvironment);
+        Environment methodsEnvironment = new Environment();
+        
+        BenzeneClass klass = new BenzeneClass(stmt.name.lexeme, fieldsEnvironment, methodsEnvironment);
 
+        methodsEnvironment.define("this", (BenzeneInstance) klass.call(null, null));
+        executeBlock(stmt.methods, klass.methods);
+
+        environment.define(stmt.name.lexeme, null);
         environment.assign(stmt.name, klass);
+
         Type.updateTypeMap(klass.getName(), klass);
 
         return null;
@@ -99,7 +105,7 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         environment.define(stmt.name.lexeme, function);
 
         Type.updateTypeMap(function.getName(), function);
-        
+
         // we typecheck the function immediately after defining it
         function.typecheck(this);
 

@@ -9,10 +9,12 @@ import src.main.java.com.lang.benzene.Interpreter.BenzeneCallable.BenzeneCallabl
 public class BenzeneClass implements BenzeneCallable {
     final String name;
     public Environment fields;
+    public Environment methods;
 
-    BenzeneClass(String name, Environment fields){
+    BenzeneClass(String name, Environment fields, Environment methods){
         this.name = name;
         this.fields = fields;
+        this.methods = methods;
     }
 
     @Override

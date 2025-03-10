@@ -10,6 +10,7 @@ import src.main.java.com.lang.benzene.Tokens.Token;
 public class BenzeneInstance {
     private BenzeneClass klass;
     private final Map<String, Object> fields = new HashMap<>();
+    private final Map<String, Object> methods;
 
     BenzeneInstance(BenzeneClass klass){
         this.klass = klass;
@@ -17,6 +18,8 @@ public class BenzeneInstance {
         for (Map.Entry<String, Object> entry : this.klass.fields.values.entrySet()){
             fields.put(entry.getKey(), entry.getValue());
         }
+
+        this.methods = this.klass.methods.values;
     }
 
     @Override
@@ -25,6 +28,11 @@ public class BenzeneInstance {
     }
 
     public Object get(Token name){
+        if (this.methods.containsKey(name.lexeme)){
+            BenzeneFunction function = (BenzeneFunction) this.methods.get(name.lexeme);
+            return function.bind(this);
+        }
+
         return fields.get(name.lexeme);
     }
 

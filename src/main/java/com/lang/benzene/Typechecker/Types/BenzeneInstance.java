@@ -10,6 +10,7 @@ import src.main.java.com.lang.benzene.Tokens.Token;
 public class BenzeneInstance extends Type {
     private BenzeneClass klass;
     private final Map<String, Type> fields = new HashMap<>();
+    private final Map<String, Object> methods;
 
     public BenzeneInstance(BenzeneClass klass){
         super(klass.name);
@@ -18,6 +19,8 @@ public class BenzeneInstance extends Type {
         for (Map.Entry<String, Object> entry : this.klass.fields.values.entrySet()){
             fields.put(entry.getKey(), (Type) entry.getValue());
         }
+
+        this.methods = this.klass.methods.values;
     }
 
     public String getName(){
@@ -25,7 +28,9 @@ public class BenzeneInstance extends Type {
     }
 
     public Object get(Token name){
-        if (fields.containsKey(name.lexeme)){
+        if (methods.containsKey(name.lexeme)){
+            return methods.get(name.lexeme);
+        } else if (fields.containsKey(name.lexeme)){
             return fields.get(name.lexeme);
         }
 

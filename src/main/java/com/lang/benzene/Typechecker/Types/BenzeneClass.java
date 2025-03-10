@@ -13,12 +13,14 @@ import src.main.java.com.lang.benzene.Typechecker.Types.BenzeneCallable.BenzeneC
 public class BenzeneClass extends Type implements BenzeneCallable {
     final String name;
     public Environment fields;
+    public Environment methods;
 
-    public BenzeneClass(String name, Environment fields){
+    public BenzeneClass(String name, Environment fields, Environment methods){
         super(name);
 
         this.name = name;
         this.fields = fields;
+        this.methods = methods;
     }
 
     public String getName(){

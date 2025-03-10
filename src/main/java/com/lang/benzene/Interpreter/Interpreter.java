@@ -46,8 +46,14 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Environment fieldsEnvironment = new Environment();
         executeBlock(stmt.variables, fieldsEnvironment);
 
+        Environment methodsEnvironment = new Environment();
+        for (Stmt method : stmt.methods){
+            Stmt.Function methodVariable = (Stmt.Function) method;
+            methodsEnvironment.define(methodVariable.name.lexeme, new BenzeneFunction(methodVariable, methodsEnvironment));
+        }
+
         environment.define(stmt.name.lexeme, null);
-        BenzeneClass klass = new BenzeneClass(stmt.name.lexeme, fieldsEnvironment);
+        BenzeneClass klass = new BenzeneClass(stmt.name.lexeme, fieldsEnvironment, methodsEnvironment);
         environment.assign(stmt.name, klass);
         return null;
     }
