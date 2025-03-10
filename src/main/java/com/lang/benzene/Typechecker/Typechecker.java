@@ -64,8 +64,6 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         environment.define(stmt.name.lexeme, null);
         BenzeneClass klass = new BenzeneClass(stmt.name.lexeme, fieldsEnvironment);
 
-        executeBlock(stmt.variables, klass.fields);
-
         environment.assign(stmt.name, klass);
         Type.updateTypeMap(klass.getName(), klass);
 
@@ -238,6 +236,20 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
 
         throw new RuntimeError(expr.name, "Only instances have properties.");
+    }
+
+    @Override
+    public Object visitSetExpr(Expr.Set expr){
+        Object object = evaluate(expr.object);
+
+        if (!(object instanceof BenzeneInstance)){
+            throw new RuntimeError(expr.name, "Only instances have fields.");
+        }
+
+        Object value = evaluate(expr.value);
+        ((BenzeneInstance) object).set(expr.name, (Type) value);
+
+        return value;
     }
 
     @Override

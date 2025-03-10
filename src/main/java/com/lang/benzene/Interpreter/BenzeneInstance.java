@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import src.main.java.com.lang.benzene.Errors.RuntimeError;
+import src.main.java.com.lang.benzene.Errors.TypeMismatchError;
 import src.main.java.com.lang.benzene.Tokens.Token;
 
 public class BenzeneInstance {
@@ -18,17 +19,16 @@ public class BenzeneInstance {
         }
     }
 
-
     @Override
     public String toString(){
         return klass.name;
     }
 
     public Object get(Token name){
-        if (fields.containsKey(name.lexeme)){
-            return fields.get(name.lexeme);
-        }
+        return fields.get(name.lexeme);
+    }
 
-        throw new RuntimeError(name, "Undefined proeprty " + name.lexeme + ".");
+    public void set(Token name, Object value){
+        fields.put(name.lexeme, value);
     }
 }

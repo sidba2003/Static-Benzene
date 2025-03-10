@@ -122,11 +122,17 @@ public class Interpreter implements  Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Object visitGetExpr(Expr.Get expr){
         Object object = evaluate(expr.object);
-        if (object instanceof BenzeneInstance){
-            return ((BenzeneInstance) object).get(expr.name);
-        }
+        return ((BenzeneInstance) object).get(expr.name);
+    }
 
-        throw new RuntimeError(expr.name, "Only instances have properties.");
+    @Override
+    public Object visitSetExpr(Expr.Set expr){
+        Object object = evaluate(expr.object);
+
+        Object value = evaluate(expr.value);
+        ((BenzeneInstance) object).set(expr.name, value);
+
+        return value;
     }
 
     @Override
