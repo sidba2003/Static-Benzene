@@ -8,7 +8,7 @@ import src.main.java.com.lang.benzene.Typechecker.Types.Type;
 
 public interface BenzeneCallable {
     Object typecheck(Typechecker typechecker);
-    Object call(Typechecker typechecker, List<Object> arguments);
+    Object call(Typechecker typechecker, List<Type> arguments);
     void checkCall(ArrayList<Type> aurgumentTypes);
     int arity();
     Type getReturnTypeString();

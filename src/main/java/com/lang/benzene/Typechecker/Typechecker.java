@@ -56,20 +56,43 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
+    /**
+     * Checks if the functions defined in classes are valid or not
+     * functions cannot have the name 'this', or be called 'init' and return something other than the class instance
+     * @param methods
+    * @throws Exception 
+    */
+    private void checkClassMethodsValidity(String className, List<Stmt> methods){
+        for (Stmt function : methods){
+            Stmt.Function functionCast = (Stmt.Function) function;
+            if (functionCast.name.lexeme.equals("this")){
+                throw new RuntimeException("Invalid method defined in the class");
+            } else if (functionCast.name.lexeme.equals("init") && !functionCast.returnType.equals("<<" + className + ">>")){
+                throw new RuntimeException("Invalid method defined in the class");
+            }
+        }
+    }
+
     @Override
     public Void visitClassStmt(Stmt.Class stmt){
+        // checks if all the methods defined in the class are valid or not
+        checkClassMethodsValidity(stmt.name.lexeme, stmt.methods);
+
         Environment fieldsEnvironment = new Environment();
         executeBlock(stmt.variables, fieldsEnvironment);
 
         Environment methodsEnvironment = new Environment();
         
         BenzeneClass klass = new BenzeneClass(stmt.name.lexeme, fieldsEnvironment, methodsEnvironment);
-
-        methodsEnvironment.define("this", (BenzeneInstance) klass.call(null, null));
-        executeBlock(stmt.methods, klass.methods);
-
         environment.define(stmt.name.lexeme, null);
         environment.assign(stmt.name, klass);
+
+        BenzeneInstance instance = (BenzeneInstance) klass.call(null, null);
+
+        methodsEnvironment.define("this", instance);
+        Type.updateTypeMap(stmt.name.lexeme, instance);
+
+        executeBlock(stmt.methods, klass.methods);
 
         Type.updateTypeMap(klass.getName(), klass);
 
@@ -282,7 +305,7 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             throw new TypeMismatchError(expr.paren, mismatchError.getMessage());
         }
         
-        return callable.call(this, new ArrayList<>());
+        return callable.call(this, argumentTypes);
     }
 
     @Override 

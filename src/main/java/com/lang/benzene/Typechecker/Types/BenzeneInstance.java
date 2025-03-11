@@ -28,7 +28,10 @@ public class BenzeneInstance extends Type {
     }
 
     public Object get(Token name){
-        if (methods.containsKey(name.lexeme)){
+        if (this.methods.containsKey(name.lexeme)){
+            if (name.lexeme.equals("init")){
+                throw new RuntimeException("cannot call constructors out of class instance creation!");
+            }
             return methods.get(name.lexeme);
         } else if (fields.containsKey(name.lexeme)){
             return fields.get(name.lexeme);

@@ -11,4 +11,8 @@ public class TypeMismatchError extends RuntimeException {
         super(message);
         this.token = token;
     }
+
+    public TypeMismatchError(String message){
+        super(message);
+    }
 }

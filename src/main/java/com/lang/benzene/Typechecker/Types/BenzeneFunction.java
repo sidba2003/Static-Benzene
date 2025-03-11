@@ -60,7 +60,7 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
     // only implemented the call function to incorporate java's rules
     // made some mistakes in the initial working days on this project :(
     @Override
-    public Type call(Typechecker tc, List<Object> args){
+    public Type call(Typechecker tc, List<Type> args){
         return Type.getTypeFromString(this.returnType);
     }
 

@@ -16,7 +16,7 @@ class BenzeneFunction implements BenzeneCallable{
         this.closure = closure;
     }
 
-    public Object bind(BenzeneInstance instance){
+    public BenzeneFunction bind(BenzeneInstance instance){
         Environment environment = new Environment(this.closure);
         environment.define("this", instance);
         return new BenzeneFunction(declaration, environment);

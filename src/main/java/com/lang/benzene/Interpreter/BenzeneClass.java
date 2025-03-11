@@ -17,9 +17,21 @@ public class BenzeneClass implements BenzeneCallable {
         this.methods = methods;
     }
 
+    BenzeneFunction findMethod(String methodName){
+        if (this.methods.values.containsKey(methodName)){
+            return (BenzeneFunction) this.methods.values.get(methodName);
+        }
+
+        return null;
+    }
+
     @Override
     public Object call(Interpreter interpreter, List<Object> arguments){
         BenzeneInstance instance = new BenzeneInstance(this);
+        BenzeneFunction initializer = findMethod("init");
+        if (initializer != null){
+            initializer.bind(instance).call(interpreter, arguments);
+        }
         return instance;
     }
 
