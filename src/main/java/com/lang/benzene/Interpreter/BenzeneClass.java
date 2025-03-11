@@ -37,7 +37,10 @@ public class BenzeneClass implements BenzeneCallable {
 
     @Override
     public int arity(){
-        return 0;
+        BenzeneFunction initializer = findMethod("init");
+
+        if (initializer == null) return 0;
+        return initializer.arity();
     }
 
     @Override
