@@ -366,11 +366,7 @@ public class Typechecker implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck binary expression");
             case BANG_EQUAL:
             case EQUAL_EQUAL:
-                if (left.equals(Type.bool) && right.equals(Type.bool)){
-                    return Type.bool;
-                }
-                // this line will execute for both of BANG_EQUAL AND EQUAL_EQUAL swicth statements
-                throw new TypeMismatchError(expr.operator, "Type mismatch while trying to typecheck '==' or '!=' expression");
+                return Type.bool;
             default:
                 return null;    // unreachable
         }
