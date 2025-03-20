@@ -38,6 +38,7 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
 
     public String getName(){
         StringBuilder functionType = new StringBuilder();
+        
         functionType.append("fn<");
         functionType.append(this.returnType.substring(2, returnType.length() - 2) + "<");
 
@@ -45,8 +46,11 @@ public class BenzeneFunction extends Type implements BenzeneCallable {
             functionType.append(paramType.substring(2, paramType.length() - 2) + ",");
         }
 
-        functionType.deleteCharAt(functionType.length() - 1);
-
+        // we only remove the last comma if the last added char is a comma
+        if (functionType.charAt(functionType.length() - 1) == ','){
+            functionType.deleteCharAt(functionType.length() - 1);
+        }
+        
         functionType.append(">>");
 
         return functionType.toString();
