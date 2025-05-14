@@ -13,22 +13,18 @@ The primitive types are `<<string>>`, `<<boolean>>`, `<<number>>` and `<<nil>>`.
 Please note, the `<<number>>` type is used to store all the integer types, such as float, integer, and double.
 
 ## Variable Declarations and Types
-Variables ared ecalred by adding the `var` keyword before an identifier. The variables do not need to be intialised during decalration. For example, 
+Variables are declared by adding the `var` keyword before an identifier. The variables do not need to be intialised during decalration. For example, 
 ```
-  var x;
-  var x = 24;
+  var x: <<nil>>;
+  var x: <<number>> = 24;
 ```
 Are both examples of valid Benzene code.
 
-
-Benzene supports the basic types of numbers (which represent Java's int and double), string, boolean, and null.
+If a value is not initialised during variable declaration, then the nil value is assigned to variables by default.
 ```
-  var x = false;
-  var x = true;
-  var x = "Hello, world!";
-  var x = null;
+  var x: <<number>>;  // invalid code, as nil will be assigned to x by default and <<number>> type does not match it
+  var x: <<nil>>;  // valid Benzene code
 ```
-Since Benzene is a dynamically typed language, the types do not need to be specified.
 
 
 ## Operations
