@@ -7,7 +7,9 @@ The typechecker / interpreter both use the Visitor Design Pattern as it allowed 
 
 ## Types
 Types in Benzene are surrounded by `<<` and `>>`.
+
 The primitive types are `<<string>>`, `<<boolean>>`, `<<number>>` and `<<nil>>`.
+
 Please note, the `<<number>>` type is used to store all the integer types, such as float, integer, and double.
 
 ## Variable Declarations and Types
